@@ -1,5 +1,7 @@
 # Notes
 
+LiveView Note Taking App
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
