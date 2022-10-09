@@ -7,23 +7,23 @@ defmodule Notes.Noted.NoteServer do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def all_notes(pid) do
+  def all_notes() do
     GenServer.call(__MODULE__, :all_notes)
   end
 
-  def create_note(pid, note) do
+  def create_note(note) do
     GenServer.cast(__MODULE__, {:create_note, note})
   end
 
-  def get_note(pid, id) do
+  def get_note(id) do
     GenServer.call(__MODULE__, {:get_note, id})
   end
 
-  def delete_note(pid, id) do
+  def delete_note(id) do
     GenServer.cast(__MODULE__, {:delete_note, id})
   end
 
-  def update_note(pid, note) do
+  def update_note(note) do
     GenServer.cast(__MODULE__, {:update_note, note})
   end
 
@@ -37,6 +37,15 @@ defmodule Notes.Noted.NoteServer do
   def handle_cast({:create_note, note}, notes) do
     updated_note = add_id(notes, note)
     updates_notes = [updated_note | notes]
+
+    message = {:note_created, updated_note}
+
+    Phoenix.PubSub.broadcast(
+      Notes.PubSub,
+      "notes",
+      message
+    )
+
     {:noreply, updates_notes}
   end
 
